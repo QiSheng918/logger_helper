@@ -44,7 +44,7 @@ private:
 			m_console_logger = spdlog::stdout_color_st("console");
 			m_file_logger = spdlog::basic_logger_mt("logger", m_logger_file);
 			setLogLevel("info");
-			std::string pattern="[%Y-%m-%d %H:%M:%S.%f] [%^file %s] [func %!] [line %#] [%l]  %v";
+			std::string pattern="[%Y-%m-%d %H:%M:%S.%f][file %5s][func %5!][line %2#] [%5l]: %^%v%$";
 			setLogPattern(pattern);
 		}
 		catch (const spdlog::spdlog_ex& ex)
