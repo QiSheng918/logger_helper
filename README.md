@@ -3,7 +3,8 @@ easy wrapper spdlog
 
 # Dependency
 ```bash
-sudo apt-get install libspdlog-dev
+sudo chmod +x install.sh
+sh ./install.sh
 ```
 # Usage
 

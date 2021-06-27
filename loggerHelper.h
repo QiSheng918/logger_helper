@@ -1,25 +1,19 @@
 #include <iostream>
 #include <string>
 #include "spdlog/spdlog.h"
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 
-#ifndef suffix
-#define suffix(msg)  std::string("[func: ")\
-        .append(__func__)\
-        .append("] [line:").append(std::to_string(__LINE__))\
-        .append("] ").append(std::string(msg)).c_str()
-#endif
-
-
-#define LOG_TRACE(...)  Logger::getInstance()->getConsoleLogger()->trace(__VA_ARGS__);\
-		                Logger::getInstance()->getFileLogger()->trace(__VA_ARGS__)
-#define LOG_DEBUG(...) 	Logger::getInstance()->getConsoleLogger()->debug(__VA_ARGS__);\
-						Logger::getInstance()->getFileLogger()->debug(__VA_ARGS__)
-#define LOG_INFO(...)  	Logger::getInstance()->getConsoleLogger()->info(__VA_ARGS__);\
-						Logger::getInstance()->getFileLogger()->info(__VA_ARGS__)
-#define LOG_WARN(...)  	Logger::getInstance()->getConsoleLogger()->warn(__VA_ARGS__);\
-						Logger::getInstance()->getFileLogger()->warn(__VA_ARGS__)
-#define LOG_ERROR(...) 	Logger::getInstance()->getConsoleLogger()->error( __VA_ARGS__);\
-						Logger::getInstance()->getFileLogger()->error(__VA_ARGS__)
+#define LOG_TRACE(...) 	SPDLOG_LOGGER_TRACE(Logger::getInstance()->getConsoleLogger(),__VA_ARGS__);\
+		                SPDLOG_LOGGER_TRACE(Logger::getInstance()->getFileLogger(),__VA_ARGS__)
+#define LOG_DEBUG(...) 	SPDLOG_LOGGER_DEBUG(Logger::getInstance()->getConsoleLogger(),__VA_ARGS__);\
+						SPDLOG_LOGGER_DEBUG(Logger::getInstance()->getFileLogger(),__VA_ARGS__)
+#define LOG_INFO(...)  	SPDLOG_LOGGER_INFO(Logger::getInstance()->getConsoleLogger(),__VA_ARGS__);\
+						SPDLOG_LOGGER_INFO(Logger::getInstance()->getFileLogger(),__VA_ARGS__)
+#define LOG_WARN(...)  	SPDLOG_LOGGER_WARN(Logger::getInstance()->getConsoleLogger(),__VA_ARGS__);\
+						SPDLOG_LOGGER_WARN(Logger::getInstance()->getFileLogger(),__VA_ARGS__)
+#define LOG_ERROR(...) 	SPDLOG_LOGGER_ERROR(Logger::getInstance()->getConsoleLogger(),__VA_ARGS__);\
+						SPDLOG_LOGGER_ERROR(Logger::getInstance()->getFileLogger(),__VA_ARGS__)
 
 static std::string m_logger_file="log.log";
 
@@ -50,6 +44,8 @@ private:
 			m_console_logger = spdlog::stdout_color_st("console");
 			m_file_logger = spdlog::basic_logger_mt("logger", m_logger_file);
 			setLogLevel("info");
+			std::string pattern="[%Y-%m-%d %H:%M:%S.%f] [%^file %s] [func %!] [line %#] [%l]  %v";
+			setLogPattern(pattern);
 		}
 		catch (const spdlog::spdlog_ex& ex)
 		{
@@ -92,9 +88,10 @@ private:
 		}
 	}
 
-	void setLogPattern(const std::string& pattern){
+	void setLogPattern(const std::string& pattern=""){
+		spdlog::set_pattern(pattern);
 		// m_file_logger->set_pattern("%Y-%m-%d %H:%M:%S.%f <thread %t> [%l] [%#] %v"); // with timestamp, thread_id, filename and line number
-		m_file_logger->set_pattern(pattern);
+		// m_file_logger->set_pattern(pattern);
 	}
     
 	Logger(const Logger&) = delete;
